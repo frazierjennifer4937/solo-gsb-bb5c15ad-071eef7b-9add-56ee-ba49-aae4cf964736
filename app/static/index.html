@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>最大余数席位分配悖论核查工具</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Hamilton / Largest Remainder</p>
+        <h1>最大余数席位分配悖论核查</h1>
+        <p class="subtitle">
+          逐个总席位精确计算配额、整数席位与余数，并列定位增加总席位后反而失去席位的地区。
+        </p>
+      </div>
+      <div class="header-badge" aria-label="精确分数计算">
+        <strong>100%</strong>
+        <span>精确分数<br />无浮点排序</span>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="card input-card" aria-labelledby="input-title">
+        <div class="card-heading">
+          <div>
+            <p class="eyebrow">Step 1</p>
+            <h2 id="input-title">录入地区与席位范围</h2>
+          </div>
+          <button id="loadExample" class="button secondary" type="button">载入可复现示例</button>
+        </div>
+
+        <form id="calculatorForm" novalidate>
+          <div class="table-wrap region-table-wrap">
+            <table class="region-table">
+              <thead>
+                <tr>
+                  <th class="order-col">#</th>
+                  <th>地区名称</th>
+                  <th>正整数人口</th>
+                  <th class="action-col"></th>
+                </tr>
+              </thead>
+              <tbody id="regionRows"></tbody>
+            </table>
+          </div>
+
+          <div class="form-actions">
+            <button id="addRegion" class="button secondary" type="button">+ 添加地区</button>
+          </div>
+
+          <div class="range-grid">
+            <label>
+              <span>席位起始值</span>
+              <input id="houseStart" name="houseStart" inputmode="numeric" required />
+            </label>
+            <label>
+              <span>席位结束值</span>
+              <input id="houseEnd" name="houseEnd" inputmode="numeric" required />
+            </label>
+          </div>
+
+          <p class="rule-note">
+            扫描跨度 = 结束值 − 起始值，最大为 <strong>500</strong>；余数相同时，依次按人口较大、录入较早决胜。
+          </p>
+
+          <div id="formError" class="form-error" role="alert" hidden></div>
+          <button class="button primary submit-button" type="submit">
+            计算并扫描悖论
+          </button>
+        </form>
+      </section>
+
+      <section class="card method-card" aria-labelledby="method-title">
+        <p class="eyebrow">Method</p>
+        <h2 id="method-title">核查规则</h2>
+        <ol class="method-list">
+          <li>
+            <strong>精确配额：</strong>
+            地区配额 = 地区人口 × 总席位 ÷ 总人口，使用分数保存，不转小数。
+          </li>
+          <li>
+            <strong>Hamilton 分配：</strong>
+            先分配配额整数部分，再按余数从大到小逐个发放剩余席位。
+          </li>
+          <li>
+            <strong>同余决胜：</strong>
+            余数相同则人口较大者优先；人口也相同时，录入顺序较早者优先。
+          </li>
+          <li>
+            <strong>悖论判定：</strong>
+            总席位从 N 增至 N+1 后，任一地区所得席位严格减少，即高亮为阿拉巴马悖论。
+          </li>
+        </ol>
+      </section>
+
+      <section id="results" class="results" aria-live="polite">
+        <div class="empty-state card">
+          <h2>等待计算</h2>
+          <p>载入示例或录入数据后，结果将在这里并列展示变化前后的精确分数与余数排序。</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      FastAPI · 原生 HTML/CSS/JavaScript · Python fractions.Fraction
+    </footer>
+
+    <script src="/static/app.js" defer></script>
+  </body>
+</html>
